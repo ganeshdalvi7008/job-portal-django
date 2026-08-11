@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home | JobConnect - Online Job Portal{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-shape hero-shape-1"></div>
+    <div class="hero-shape hero-shape-2"></div>
+    
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="badge bg-primary-light text-primary mb-3 px-3 py-2 fw-semibold">Over 1,200+ Active Roles</span>
+                <h1 class="display-4 fw-extrabold mb-4 lh-sm">
+                    Discover Your <span class="text-primary">Dream Job</span> and Shape Your Future
+                </h1>
+                <p class="lead text-secondary mb-5">
+                    Connect with top-tier companies worldwide. Whether you're a fresher looking for your first break or a veteran seeking growth, we've got you covered.
+                </p>
+                
+                <!-- Quick Search Bar -->
+                <form action="{% url 'job_list' %}" method="GET" class="card p-2 border-0 shadow-lg d-flex flex-row gap-2 flex-wrap flex-md-nowrap align-items-center" style="border-radius: var(--radius-md);">
+                    <div class="input-group border-0">
+                        <span class="input-group-text bg-white border-0"><i class="bi bi-search text-primary"></i></span>
+                        <input type="text" name="q" class="form-control border-0 bg-white" placeholder="Job Title, Skills, or Company..." aria-label="Search jobs">
+                    </div>
+                    <button type="submit" class="btn btn-primary-custom w-100 w-md-auto py-3 px-4">Find Jobs</button>
+                </form>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <!-- Visual graphic: Grid of mock companies and icons -->
+                <div class="row g-4 justify-content-center">
+                    <div class="col-6">
+                        <div class="card card-custom p-4 text-center">
+                            <div class="display-6 text-primary mb-2"><i class="bi bi-laptop"></i></div>
+                            <h5 class="card-title mb-1">Technology</h5>
+                            <p class="text-muted small mb-0">620+ Active Jobs</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card card-custom p-4 text-center mt-4">
+                            <div class="display-6 text-secondary mb-2"><i class="bi bi-graph-up-arrow"></i></div>
+                            <h5 class="card-title mb-1">Finance</h5>
+                            <p class="text-muted small mb-0">180+ Active Jobs</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card card-custom p-4 text-center">
+                            <div class="display-6 text-warning mb-2"><i class="bi bi-megaphone"></i></div>
+                            <h5 class="card-title mb-1">Marketing</h5>
+                            <p class="text-muted small mb-0">110+ Active Jobs</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card card-custom p-4 text-center mt-4">
+                            <div class="display-6 text-danger mb-2"><i class="bi bi-gear-fill"></i></div>
+                            <h5 class="card-title mb-1">Engineering</h5>
+                            <p class="text-muted small mb-0">340+ Active Jobs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- System Statistics Bar -->
+<section class="py-5 bg-white border-bottom">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-md-4">
+                <div class="p-3">
+                    <h2 class="display-5 fw-bold text-primary mb-1">{{ total_jobs_stat }}</h2>
+                    <p class="text-secondary fw-semibold mb-0">Active Jobs Listed</p>
+                </div>
+            </div>
+            <div class="col-md-4 border-start border-end border-md-none">
+                <div class="p-3">
+                    <h2 class="display-5 fw-bold text-primary mb-1">{{ total_companies_stat }}</h2>
+                    <p class="text-secondary fw-semibold mb-0">Verified Companies</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3">
+                    <h2 class="display-5 fw-bold text-primary mb-1">{{ total_seekers_stat }}</h2>
+                    <p class="text-secondary fw-semibold mb-0">Active Candidates</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Jobs -->
+<section class="py-6 my-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <span class="text-primary fw-bold text-uppercase tracking-wider">Top Openings</span>
+                <h2 class="display-6 mb-0 mt-1">Featured Job Opportunities</h2>
+            </div>
+            <a href="{% url 'job_list' %}" class="btn btn-outline-primary border-2 fw-semibold px-4 py-2">Explore All Jobs</a>
+        </div>
+        
+        <div class="row g-4">
+            {% if featured_jobs %}
+                {% for job in featured_jobs %}
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card card-custom p-4 d-flex flex-column justify-content-between h-100">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    {% if job.company.logo %}
+                                        <img src="{{ job.company.logo.url }}" alt="{{ job.company.company_name }}" class="company-logo-img">
+                                    {% else %}
+                                        <div class="company-logo-img d-flex align-items-center justify-content-center bg-primary-light text-primary fw-bold">
+                                            {{ job.company.company_name|slice:":1" }}
+                                        </div>
+                                    {% endif %}
+                                    <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-semibold">{{ job.job_type }}</span>
+                                </div>
+                                <h5 class="card-title mb-1"><a href="{% url 'job_detail' job.id %}" class="text-decoration-none text-dark hover-primary">{{ job.title }}</a></h5>
+                                <p class="text-secondary small mb-3">{{ job.company.company_name }} &bull; {{ job.location }}</p>
+                                
+                                <p class="card-text text-muted mb-4 line-clamp-3">
+                                    {{ job.description|truncatewords:20 }}
+                                </p>
+                            </div>
+                            
+                            <div>
+                                <div class="d-flex flex-wrap gap-1 mb-3">
+                                    {% for skill in job.get_skills_list|slice:":3" %}
+                                        <span class="badge bg-secondary-light text-secondary rounded-pill px-2.5 py-1.5">{{ skill }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-primary fw-bold">
+                                        {% if job.salary_min %}
+                                            ${{ job.salary_min|floatformat:0 }} - ${{ job.salary_max|floatformat:0 }}
+                                        {% else %}
+                                            Negotiable
+                                        {% endif %}
+                                    </span>
+                                    <a href="{% url 'job_detail' job.id %}" class="btn btn-sm btn-outline-primary border-2 px-3">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No jobs posted yet. Are you a recruiter? <a href="{% url 'recruiter_register' %}">Post a job now</a>!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-6 bg-white border-top border-bottom my-5">
+    <div class="container text-center">
+        <span class="text-primary fw-bold text-uppercase">Process flow</span>
+        <h2 class="display-6 mb-5 mt-1">How JobConnect Works</h2>
+        
+        <div class="row g-5">
+            <div class="col-md-4">
+                <div class="p-4">
+                    <div class="display-4 text-primary mb-3"><i class="bi bi-person-plus-fill"></i></div>
+                    <h4>1. Register Account</h4>
+                    <p class="text-secondary">Create a free account either as a Job Seeker to apply, or a Recruiter to hire top talent.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4">
+                    <div class="display-4 text-primary mb-3"><i class="bi bi-file-earmark-person-fill"></i></div>
+                    <h4>2. Complete Profile</h4>
+                    <p class="text-secondary">Job seekers upload resumes and list skills. Recruiters configure their company page and credentials.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4">
+                    <div class="display-4 text-primary mb-3"><i class="bi bi-check-circle-fill"></i></div>
+                    <h4>3. Connect & Succeed</h4>
+                    <p class="text-secondary">Seekers apply to openings instantly. Recruiters interview, evaluate, and hire matching applicants.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call-to-action Section -->
+<section class="py-6 my-5">
+    <div class="container">
+        <div class="card border-0 card-gradient-1 p-5 rounded-lg shadow-xl text-center">
+            <div class="py-4">
+                <h2 class="display-5 fw-bold mb-3 text-white">Looking to Hire Top Talent?</h2>
+                <p class="lead text-white-50 mb-5 max-w-2xl mx-auto">
+                    List your company vacancies, review candidate profiles, download resumes, and manage interview statuses efficiently all in one place.
+                </p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="{% url 'recruiter_register' %}" class="btn btn-secondary-custom btn-lg px-5 py-3">Post a Job Instantly</a>
+                    <a href="{% url 'seeker_register' %}" class="btn btn-outline-light btn-lg px-5 py-3 border-2">Find a Career</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

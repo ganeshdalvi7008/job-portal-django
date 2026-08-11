@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Application Details | JobConnect{% endblock %}
+
+{% block content %}
+<section class="py-6 my-4">
+    <div class="container">
+        <!-- Application Title Block -->
+        <div class="card card-custom p-4 mb-4 bg-light border-0 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <span class="text-primary fw-bold text-xs text-uppercase mb-1">Application for</span>
+                    <h3 class="fw-bold mb-1">{{ app.job.title }}</h3>
+                    <p class="text-secondary mb-0">Company: <a href="{% url 'company_detail' app.job.company.id %}" class="fw-semibold text-decoration-none text-dark">{{ app.job.company.company_name }}</a></p>
+                </div>
+                
+                <div class="text-end">
+                    <span class="d-block text-muted small mb-1">Applied on {{ app.applied_at|date:"d M Y" }}</span>
+                    <span class="badge 
+                        {% if app.status == 'Applied' %}badge-custom-applied
+                        {% elif app.status == 'Under Review' %}badge-custom-review
+                        {% elif app.status == 'Shortlisted' %}badge-custom-shortlist
+                        {% elif app.status == 'Interview' %}badge-custom-interview
+                        {% elif app.status == 'Selected' %}badge-custom-selected
+                        {% elif app.status == 'Rejected' %}badge-custom-rejected
+                        {% endif %} px-3 py-2 fw-semibold fs-7 shadow-sm">
+                        Status: {{ app.get_status_display }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Left Info Block -->
+            <div class="col-lg-8">
+                <!-- Seeker Details (Visible to Recruiters & Admins) -->
+                {% if request.user.role == 'recruiter' or request.user.is_superuser %}
+                    <div class="card card-custom p-4 mb-4">
+                        <h4 class="border-bottom pb-3 mb-4">Applicant Information</h4>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <span class="text-muted small d-block">Candidate Name</span>
+                                <span class="fw-semibold">{{ app.job_seeker.first_name }} {{ app.job_seeker.last_name }}</span>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="text-muted small d-block">Email Address</span>
+                                <span class="fw-semibold">{{ app.job_seeker.email }}</span>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="text-muted small d-block">Phone Number</span>
+                                <span class="fw-semibold">{{ app.job_seeker.seeker_profile.phone|default:"Not Provided" }}</span>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="text-muted small d-block">City Location</span>
+                                <span class="fw-semibold">{{ app.job_seeker.seeker_profile.city|default:"Not Provided" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5 class="text-primary mb-2 small text-uppercase fw-bold">Academic Background</h5>
+                            <div class="p-3 bg-light rounded text-secondary text-sm" style="white-space: pre-line;">{{ app.job_seeker.seeker_profile.education|default:"No details provided." }}</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5 class="text-primary mb-2 small text-uppercase fw-bold">Work Experience</h5>
+                            <div class="p-3 bg-light rounded text-secondary text-sm" style="white-space: pre-line;">{{ app.job_seeker.seeker_profile.experience|default:"No details provided." }}</div>
+                        </div>
+                        
+                        <div>
+                            <h5 class="text-primary mb-2 small text-uppercase fw-bold">Skills List</h5>
+                            <div class="d-flex flex-wrap gap-1.5 mt-2">
+                                {% if app.job_seeker.seeker_profile.skills %}
+                                    {% for s in app.job_seeker.seeker_profile.skills.split %}
+                                        <span class="badge bg-secondary-light text-secondary rounded-pill px-2.5 py-1.5">{{ s|replace_comma|default:s }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted small">No skills specified.</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <!-- Cover Letter -->
+                <div class="card card-custom p-4 mb-4">
+                    <h4 class="border-bottom pb-3 mb-4">Cover Letter / Presentation</h4>
+                    <div class="p-4 bg-light rounded" style="border-left: 4px solid var(--primary);">
+                        <p class="mb-0 text-secondary" style="white-space: pre-line; line-height: 1.8;">
+                            {{ app.cover_letter|default:"No cover letter was submitted with this application." }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Actions Sidebar -->
+            <div class="col-lg-4">
+                <!-- Status updater form for recruiters -->
+                {% if request.user.role == 'recruiter' and request.user == app.job.recruiter %}
+                    <div class="card card-custom p-4 mb-4 bg-light border-0 shadow-sm">
+                        <h4 class="mb-3 text-dark border-bottom pb-2">Manage Application</h4>
+                        
+                        <form action="{% url 'update_application_status' app.id %}" method="POST">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="status" class="form-label fw-semibold small text-secondary">Change Status</label>
+                                <select name="status" id="status" class="form-select">
+                                    {% for code, label in app.STATUS_CHOICES %}
+                                        <option value="{{ code }}" {% if app.status == code %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-secondary-custom w-100 py-2.5">Update Status</button>
+                        </form>
+                    </div>
+                {% endif %}
+                
+                <!-- Resume Download Block -->
+                <div class="card card-custom p-4">
+                    <h4 class="mb-3 text-dark border-bottom pb-2">Attached Resume</h4>
+                    <p class="text-muted small mb-3">Download the copy of the resume submitted at the time of application.</p>
+                    
+                    {% if app.resume %}
+                        <a href="{% url 'download_resume' app.id %}" class="btn btn-primary-custom w-100 py-2.5 d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-cloud-arrow-down-fill"></i> Download Candidate Resume
+                        </a>
+                    {% else %}
+                        <div class="alert alert-danger mb-0 text-center py-2.5 text-xs"><i class="bi bi-x-circle-fill"></i> Resume file missing.</div>
+                    {% endif %}
+                </div>
+                
+                <div class="text-center mt-4">
+                    {% if request.user.role == 'recruiter' %}
+                        <a href="{% url 'job_applicants' app.job.id %}" class="btn btn-link text-decoration-none small"><i class="bi bi-arrow-left"></i> Back to Applicants List</a>
+                    {% else %}
+                        <a href="{% url 'my_applications' %}" class="btn btn-link text-decoration-none small"><i class="bi bi-arrow-left"></i> Back to My Applications</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

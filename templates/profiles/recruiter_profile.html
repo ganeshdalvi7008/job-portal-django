@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Recruiter Profile | JobConnect{% endblock %}
+
+{% block content %}
+<section class="dashboard-container">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <div class="sidebar-card text-center mb-4">
+                    <div class="profile-avatar-img d-inline-flex align-items-center justify-content-center bg-secondary-light text-secondary fs-1 mb-3">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <h4 class="mb-1">{{ profile.user.first_name }} {{ profile.user.last_name }}</h4>
+                    <p class="text-secondary small">{{ profile.user.email }}</p>
+                    <span class="badge bg-secondary text-white mb-4">Recruiter</span>
+                    
+                    <hr>
+                    <div class="text-start">
+                        <a href="{% url 'recruiter_dashboard' %}" class="sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                        <a href="{% url 'recruiter_profile' %}" class="sidebar-link active"><i class="bi bi-building"></i> Company/Profile</a>
+                        <a href="{% url 'edit_recruiter_profile' %}" class="sidebar-link"><i class="bi bi-pencil-square"></i> Edit Profile</a>
+                        <a href="{% url 'manage_jobs' %}" class="sidebar-link"><i class="bi bi-list-task"></i> Manage Jobs</a>
+                        <a href="{% url 'add_job' %}" class="sidebar-link"><i class="bi bi-plus-circle"></i> Post a Job</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recruiter Profile Details Content -->
+            <div class="col-lg-9">
+                <!-- Info Summary Card -->
+                <div class="card card-custom p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-4">
+                        <div>
+                            <h3 class="mb-1">Recruiter Profile</h3>
+                            <p class="text-muted mb-0">Your professional details as a recruiter</p>
+                        </div>
+                        <a href="{% url 'edit_recruiter_profile' %}" class="btn btn-sm btn-outline-secondary border-2 px-3"><i class="bi bi-pencil-square me-1"></i> Edit Profile</a>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <span class="text-muted small d-block">Designation</span>
+                            <span class="fw-semibold">{{ profile.designation|default:"Not Specified" }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-muted small d-block">Contact Phone</span>
+                            <span class="fw-semibold">{{ profile.phone|default:"Not Specified" }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Linked Company Info -->
+                <div class="card card-custom p-4">
+                    <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-4">
+                        <div>
+                            <h3 class="mb-1">Company Profile</h3>
+                            <p class="text-muted mb-0">Information about the company you represent</p>
+                        </div>
+                        <a href="{% url 'manage_company' %}" class="btn btn-sm btn-outline-primary border-2 px-3">
+                            <i class="bi bi-gear-fill me-1"></i> {% if profile.company %}Edit Company{% else %}Create Company Profile{% endif %}
+                        </a>
+                    </div>
+                    
+                    {% if profile.company %}
+                        <div class="d-flex flex-wrap gap-4 align-items-start mb-4">
+                            {% if profile.company.logo %}
+                                <img src="{{ profile.company.logo.url }}" alt="{{ profile.company.company_name }}" class="company-logo-img img-fluid" style="width: 80px; height: 80px;">
+                            {% else %}
+                                <div class="company-logo-img d-inline-flex align-items-center justify-content-center bg-primary-light text-primary fw-bold fs-2" style="width: 80px; height: 80px;">
+                                    {{ profile.company.company_name|slice:":1" }}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="flex-grow-1">
+                                <h4 class="mb-1">{{ profile.company.company_name }}</h4>
+                                <span class="badge bg-secondary-light text-secondary mb-3">{{ profile.company.industry }}</span>
+                                <p class="text-muted" style="white-space: pre-line;">{{ profile.company.description }}</p>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <span class="text-muted small d-block"><i class="bi bi-globe me-1"></i> Website</span>
+                                {% if profile.company.website %}
+                                    <a href="{{ profile.company.website }}" target="_blank" class="fw-semibold text-decoration-none text-primary">{{ profile.company.website }}</a>
+                                {% else %}
+                                    <span class="fw-semibold text-secondary">Not Listed</span>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <span class="text-muted small d-block"><i class="bi bi-envelope me-1"></i> Corporate Email</span>
+                                <span class="fw-semibold">{{ profile.company.email }}</span>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="text-muted small d-block"><i class="bi bi-telephone me-1"></i> Phone</span>
+                                <span class="fw-semibold">{{ profile.company.phone }}</span>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="text-muted small d-block"><i class="bi bi-geo-alt me-1"></i> Location (City)</span>
+                                <span class="fw-semibold">{{ profile.company.city }}</span>
+                            </div>
+                            <div class="col-md-8">
+                                <span class="text-muted small d-block"><i class="bi bi-map me-1"></i> Complete Address</span>
+                                <span class="fw-semibold">{{ profile.company.address }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 border-top pt-4 text-end">
+                            <a href="{% url 'company_detail' profile.company.id %}" class="btn btn-outline-secondary btn-sm px-3">View Public Company Page</a>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-building fs-1 text-muted mb-3 d-block"></i>
+                            <h5 class="text-dark">No Company Profile linked yet</h5>
+                            <p class="text-muted mb-4">Please create a company profile to unlock job postings features.</p>
+                            <a href="{% url 'manage_company' %}" class="btn btn-primary-custom px-4 py-2">Create Company Profile Now</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

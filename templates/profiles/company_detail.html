@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ company.company_name }} Details | JobConnect{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-white border-bottom">
+    <div class="container">
+        <div class="d-flex flex-wrap gap-4 align-items-center">
+            {% if company.logo %}
+                <img src="{{ company.logo.url }}" alt="{{ company.company_name }}" class="company-logo-img shadow-sm" style="width: 100px; height: 100px; padding: 6px; border-radius: var(--radius-md);">
+            {% else %}
+                <div class="company-logo-img d-inline-flex align-items-center justify-content-center bg-primary-light text-primary fw-bold fs-1 shadow-sm" style="width: 100px; height: 100px; border-radius: var(--radius-md);">
+                    {{ company.company_name|slice:":1" }}
+                </div>
+            {% endif %}
+            
+            <div>
+                <h1 class="display-6 mb-1">{{ company.company_name }}</h1>
+                <p class="text-secondary mb-0"><i class="bi bi-tag-fill text-primary"></i> {{ company.industry }} &bull; <i class="bi bi-geo-alt-fill text-primary"></i> {{ company.city }}</p>
+                {% if company.website %}
+                    <a href="{{ company.website }}" target="_blank" class="small text-decoration-none text-primary fw-medium"><i class="bi bi-globe"></i> Visit Website</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Left Info Block -->
+            <div class="col-lg-8">
+                <div class="mb-5">
+                    <h3 class="section-title">About the Company</h3>
+                    <p class="text-secondary" style="white-space: pre-line; line-height: 1.8;">{{ company.description }}</p>
+                </div>
+                
+                <div>
+                    <h3 class="section-title">Current Openings</h3>
+                    <div class="row g-4">
+                        {% if jobs %}
+                            {% for job in jobs %}
+                                <div class="col-md-6">
+                                    <div class="card card-custom p-4 d-flex flex-column justify-content-between h-100">
+                                        <div>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span class="badge bg-primary-light text-primary px-2.5 py-1 fw-semibold">{{ job.job_type }}</span>
+                                                <span class="text-muted small"><i class="bi bi-map"></i> {{ job.location }}</span>
+                                            </div>
+                                            <h5 class="card-title fw-bold mb-2"><a href="{% url 'job_detail' job.id %}" class="text-decoration-none text-dark hover-primary">{{ job.title }}</a></h5>
+                                            <p class="text-secondary small mb-3">Posted on {{ job.created_at|date:"d M Y" }}</p>
+                                            <p class="text-muted small line-clamp-2 mb-3">{{ job.description|truncatewords:15 }}</p>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                            <span class="text-primary fw-bold fs-7">
+                                                {% if job.salary_min %}
+                                                    ${{ job.salary_min|floatformat:0 }} - ${{ job.salary_max|floatformat:0 }}
+                                                {% else %}
+                                                    Negotiable
+                                                {% endif %}
+                                            </span>
+                                            <a href="{% url 'job_detail' job.id %}" class="btn btn-sm btn-outline-primary px-3">Apply</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-12">
+                                <div class="p-4 bg-light rounded text-center">
+                                    <p class="text-muted mb-0">No active job listings found for this company at the moment.</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Corporate Info -->
+            <div class="col-lg-4">
+                <div class="card card-custom p-4 bg-light border-0 shadow-sm">
+                    <h4 class="mb-4">Corporate Contact</h4>
+                    <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                        <li class="d-flex align-items-center gap-2 text-secondary">
+                            <i class="bi bi-envelope-fill text-primary"></i>
+                            <div>
+                                <span class="text-muted d-block small">Email Address</span>
+                                <span class="fw-semibold text-dark">{{ company.email }}</span>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center gap-2 text-secondary">
+                            <i class="bi bi-telephone-fill text-primary"></i>
+                            <div>
+                                <span class="text-muted d-block small">Contact Phone</span>
+                                <span class="fw-semibold text-dark">{{ company.phone }}</span>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center gap-2 text-secondary">
+                            <i class="bi bi-geo-alt-fill text-primary"></i>
+                            <div>
+                                <span class="text-muted d-block small">Office City</span>
+                                <span class="fw-semibold text-dark">{{ company.city }}</span>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-start gap-2 text-secondary">
+                            <i class="bi bi-map-fill text-primary mt-1"></i>
+                            <div>
+                                <span class="text-muted d-block small">Corporate HQ Address</span>
+                                <span class="fw-semibold text-dark">{{ company.address }}</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

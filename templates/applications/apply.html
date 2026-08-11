@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Apply for {{ job.title }} | JobConnect{% endblock %}
+
+{% block content %}
+<section class="py-6 my-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Job Info Card header -->
+                <div class="card card-custom p-4 mb-4 bg-light border-0 shadow-sm">
+                    <span class="text-primary fw-bold text-xs text-uppercase mb-1">Applying For</span>
+                    <h3 class="fw-bold mb-1">{{ job.title }}</h3>
+                    <p class="text-secondary mb-0">{{ job.company.company_name }} &bull; {{ job.location }}</p>
+                    <hr class="my-3">
+                    <div class="row g-2 text-secondary small">
+                        <div class="col-sm-4"><i class="bi bi-clock-history"></i> {{ job.job_type }}</div>
+                        <div class="col-sm-4"><i class="bi bi-laptop"></i> {{ job.work_mode }}</div>
+                        <div class="col-sm-4"><i class="bi bi-calendar-event"></i> Deadline: {{ job.deadline|date:"d M Y" }}</div>
+                    </div>
+                </div>
+                
+                <!-- Application Form -->
+                <div class="card card-custom p-4 p-md-5 border-0 shadow-lg">
+                    <h3 class="border-bottom pb-3 mb-4">Complete Application Form</h3>
+                    
+                    <form action="" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Resume upload indicator -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">1. Upload/Confirm Resume <span class="text-danger">*</span></label>
+                            
+                            {% if profile_resume %}
+                                <div class="p-3 bg-light rounded border mb-3 d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-file-earmark-check-fill text-success fs-4"></i>
+                                        <div>
+                                            <span class="d-block fw-semibold text-dark text-sm">Use resume from profile</span>
+                                            <a href="{{ profile_resume.url }}" target="_blank" class="small text-decoration-none text-primary">View Current Resume</a>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-success">Selected</span>
+                                </div>
+                                <div class="form-text mb-3">Or choose a different file below to update the resume for this application (PDF, DOC, DOCX up to 5MB):</div>
+                            {% else %}
+                                <div class="alert alert-warning text-sm d-flex align-items-center gap-2 mb-3">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                    You haven't uploaded a default resume in your profile. You must select a resume to apply.
+                                </div>
+                            {% endif %}
+                            
+                            {{ form.resume }}
+                            {% for error in form.resume.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Cover letter -->
+                        <div class="mb-4">
+                            <label for="{{ form.cover_letter.id_for_label }}" class="form-label fw-bold">2. Cover Letter</label>
+                            {{ form.cover_letter }}
+                            {% if form.cover_letter.help_text %}
+                                <div class="form-text small">{{ form.cover_letter.help_text }}</div>
+                            {% endif %}
+                            {% for error in form.cover_letter.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-3">
+                            <button type="submit" class="btn btn-primary-custom px-5 py-3">Submit Application</button>
+                            <a href="{% url 'job_detail' job.id %}" class="btn btn-outline-secondary px-4 py-3">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

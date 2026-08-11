@@ -1,0 +1,27 @@
+# Virtual Environment
+venv/
+ENV/
+env/
+.env
+
+# Python Caches & Compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+
+# OS Files
+Thumbs.db
+Desktop.ini
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Media uploads (user uploaded files)
+media/

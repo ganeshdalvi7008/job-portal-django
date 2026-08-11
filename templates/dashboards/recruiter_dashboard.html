@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Recruiter Dashboard | JobConnect{% endblock %}
+
+{% block content %}
+<section class="dashboard-container">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <div class="sidebar-card text-center mb-4">
+                    <div class="profile-avatar-img d-inline-flex align-items-center justify-content-center bg-secondary-light text-secondary fs-1 mb-3">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <h4 class="mb-1">{{ request.user.first_name }} {{ request.user.last_name }}</h4>
+                    <p class="text-secondary small">{{ request.user.email }}</p>
+                    <span class="badge bg-secondary text-white mb-4">Recruiter</span>
+                    
+                    <hr>
+                    <div class="text-start">
+                        <a href="{% url 'recruiter_dashboard' %}" class="sidebar-link active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                        <a href="{% url 'recruiter_profile' %}" class="sidebar-link"><i class="bi bi-building"></i> Company/Profile</a>
+                        <a href="{% url 'edit_recruiter_profile' %}" class="sidebar-link"><i class="bi bi-pencil-square"></i> Edit Profile</a>
+                        <a href="{% url 'manage_jobs' %}" class="sidebar-link"><i class="bi bi-list-task"></i> Manage Jobs</a>
+                        <a href="{% url 'add_job' %}" class="sidebar-link"><i class="bi bi-plus-circle"></i> Post a Job</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recruiter Main Content -->
+            <div class="col-lg-9">
+                <!-- Welcome Banner -->
+                <div class="card card-custom p-4 mb-4 card-gradient-2 shadow-sm text-white">
+                    <h2 class="mb-1 text-white">Welcome, {{ request.user.first_name }}!</h2>
+                    <p class="mb-0 text-white-50">Empower your recruitment process. Oversee your vacancies, examine applications, and update candidate hiring stages.</p>
+                </div>
+                
+                <!-- Metrics Grid -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="card card-custom p-3 border-start border-primary border-4 text-center">
+                            <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Jobs Posted</span>
+                            <h3 class="mb-0 fw-bold">{{ total_posted }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-custom p-3 border-start border-success border-4 text-center">
+                            <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Active Postings</span>
+                            <h3 class="mb-0 fw-bold">{{ active_jobs }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-custom p-3 border-start border-warning border-4 text-center">
+                            <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Expired/Closed</span>
+                            <h3 class="mb-0 fw-bold">{{ expired_jobs }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-custom p-3 border-start border-secondary border-4 text-center">
+                            <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Total Applications</span>
+                            <h3 class="mb-0 fw-bold">{{ total_applications }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-custom p-3 border-start border-info border-4 text-center">
+                            <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Shortlisted Profiles</span>
+                            <h3 class="mb-0 fw-bold">{{ shortlisted_candidates }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-custom p-3 border-start border-success border-4 text-center">
+                            <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Selected Hires</span>
+                            <h3 class="mb-0 fw-bold">{{ selected_candidates }}</h3>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chart Block (Interactive Visual Stats) -->
+                <div class="card card-custom p-4 mb-4">
+                    <h4 class="border-bottom pb-3 mb-4">Applications Metrics per Job Post</h4>
+                    <div class="d-flex justify-content-center">
+                        <canvas id="jobStatsChart" width="600" height="280" style="max-width: 100%;"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Recent Incoming Applications -->
+                <div class="card card-custom p-4">
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+                        <h4 class="mb-0">Recent Applications Received</h4>
+                        <a href="{% url 'manage_jobs' %}" class="small text-decoration-none text-primary fw-semibold">Manage Jobs</a>
+                    </div>
+                    
+                    {% if recent_applications %}
+                        <div class="table-responsive">
+                            <table class="table table-custom align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Applicant Name</th>
+                                        <th>Applied For</th>
+                                        <th>Submission Date</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for app in recent_applications %}
+                                        <tr>
+                                            <td class="fw-bold">{{ app.job_seeker.first_name }} {{ app.job_seeker.last_name }}</td>
+                                            <td class="small text-secondary"><a href="{% url 'job_detail' app.job.id %}" class="text-decoration-none text-dark hover-primary fw-semibold">{{ app.job.title }}</a></td>
+                                            <td class="small text-secondary">{{ app.applied_at|date:"d M Y" }}</td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if app.status == 'Applied' %}badge-custom-applied
+                                                    {% elif app.status == 'Under Review' %}badge-custom-review
+                                                    {% elif app.status == 'Shortlisted' %}badge-custom-shortlist
+                                                    {% elif app.status == 'Interview' %}badge-custom-interview
+                                                    {% elif app.status == 'Selected' %}badge-custom-selected
+                                                    {% elif app.status == 'Rejected' %}badge-custom-rejected
+                                                    {% endif %} px-2 py-1 text-xs">
+                                                    {{ app.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="{% url 'application_detail' app.id %}" class="btn btn-sm btn-outline-secondary px-3 text-xs fw-semibold">Review Packet</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4 bg-light rounded" style="border: 1px dashed var(--gray-300);">
+                            <p class="text-muted mb-0">No job seeker applications received yet for your postings.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Collect chart details passed from Django variables safely
+        const labels = [];
+        const data = [];
+        
+        {% for stat in job_stats %}
+            labels.push("{{ stat.title|escapejs }}");
+            data.push({{ stat.count }});
+        {% endfor %}
+        
+        // Execute canvas draw in static/js/main.js
+        drawRecruiterChart("jobStatsChart", labels, data);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin System Statistics | JobConnect{% endblock %}
+
+{% block content %}
+<section class="py-6 my-4">
+    <div class="container">
+        <!-- Welcome Banner -->
+        <div class="card card-custom p-4 mb-5 card-gradient-1 text-white border-0 shadow-lg">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h2 class="text-white mb-1"><i class="bi bi-shield-fill-check"></i> Admin Operations Panel</h2>
+                    <p class="mb-0 text-white-50">Review system activity, check statistics, and manage data parameters.</p>
+                </div>
+                <a href="/admin/" target="_blank" class="btn btn-secondary-custom px-4 py-3"><i class="bi bi-box-arrow-up-right"></i> Launch Django Admin Console</a>
+            </div>
+        </div>
+        
+        <!-- Numerical Stats Grid -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="card card-custom p-3 text-center border-start border-primary border-4 shadow-sm">
+                    <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Total Users</span>
+                    <h3 class="mb-0 text-primary fw-extrabold">{{ total_users }}</h3>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="card card-custom p-3 text-center border-start border-info border-4 shadow-sm">
+                    <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Job Seekers</span>
+                    <h3 class="mb-0 text-info fw-extrabold">{{ total_seekers }}</h3>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="card card-custom p-3 text-center border-start border-secondary border-4 shadow-sm">
+                    <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Recruiters</span>
+                    <h3 class="mb-0 text-secondary fw-extrabold">{{ total_recruiters }}</h3>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="card card-custom p-3 text-center border-start border-success border-4 shadow-sm">
+                    <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Companies</span>
+                    <h3 class="mb-0 text-success fw-extrabold">{{ total_companies }}</h3>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="card card-custom p-3 text-center border-start border-warning border-4 shadow-sm">
+                    <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Jobs Posted</span>
+                    <h3 class="mb-0 text-warning fw-extrabold">{{ total_jobs }}</h3>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="card card-custom p-3 text-center border-start border-danger border-4 shadow-sm">
+                    <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Applications</span>
+                    <h3 class="mb-0 text-danger fw-extrabold">{{ total_applications }}</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Recent Jobs -->
+            <div class="col-lg-6">
+                <div class="card card-custom p-4 shadow-sm h-100">
+                    <h4 class="border-bottom pb-3 mb-4">Latest Job Postings</h4>
+                    {% if recent_jobs %}
+                        <ul class="list-group list-group-flush">
+                            {% for job in recent_jobs %}
+                                <li class="list-group-item px-0 py-3 bg-transparent">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <a href="{% url 'job_detail' job.id %}" class="fw-bold text-dark text-decoration-none hover-primary">{{ job.title }}</a>
+                                            <span class="text-secondary small d-block">Company: {{ job.company.company_name }} &bull; Location: {{ job.location }}</span>
+                                        </div>
+                                        <span class="badge {% if job.status == 'approved' %}bg-success-light text-success{% else %}bg-warning-light text-warning{% endif %} px-2 py-1 text-xs">
+                                            {{ job.get_status_display }}
+                                        </span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted py-3">No jobs found in database.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Recent Registrations -->
+            <div class="col-lg-6">
+                <div class="card card-custom p-4 shadow-sm h-100">
+                    <h4 class="border-bottom pb-3 mb-4">Recently Registered Users</h4>
+                    {% if recent_users %}
+                        <ul class="list-group list-group-flush">
+                            {% for user in recent_users %}
+                                <li class="list-group-item px-0 py-3 bg-transparent">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="fw-bold text-dark">{{ user.first_name }} {{ user.last_name }}</span>
+                                            <span class="text-muted small d-block">Username: {{ user.username }} &bull; Email: {{ user.email }}</span>
+                                        </div>
+                                        <span class="badge {% if user.role == 'job_seeker' %}bg-primary-light text-primary{% else %}bg-secondary-light text-secondary{% endif %} px-2 py-1 text-xs text-uppercase">
+                                            {{ user.get_role_display }}
+                                        </span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted py-3">No recent user registrations found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

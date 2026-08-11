@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us | JobConnect{% endblock %}
+
+{% block content %}
+<section class="py-6 my-5">
+    <div class="container">
+        <div class="row align-items-center g-5 mb-5">
+            <div class="col-lg-6">
+                <span class="text-primary fw-bold text-uppercase">Who We Are</span>
+                <h1 class="display-5 mb-4">Empowering Careers, Connecting Futures</h1>
+                <p class="lead text-secondary mb-4">
+                    JobConnect is a premium online job portal management system built to close the gap between talented individuals and pioneering recruiters.
+                </p>
+                <p class="text-muted mb-4">
+                    Our platform offers a streamlined, secure environment where job seekers can display their qualifications, upload resumes, and track their application progress. Similarly, recruiters can manage postings, filter applicants, and make decisions in real-time.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="card card-custom p-5 card-gradient-1 shadow-lg text-white">
+                    <h3 class="mb-4 text-white">Our Objectives</h3>
+                    <ul class="list-unstyled d-flex flex-column gap-3 mb-0 text-white-50">
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-check-circle-fill text-white fs-5 mt-0.5"></i>
+                            <div><strong>Simplify Job Hunting:</strong> Fast searches and direct filters to locate appropriate roles easily.</div>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-check-circle-fill text-white fs-5 mt-0.5"></i>
+                            <div><strong>Optimize Hiring:</strong> Tools for recruiters to track applicants from receipt through onboarding.</div>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-check-circle-fill text-white fs-5 mt-0.5"></i>
+                            <div><strong>Security & Integrity:</strong> Complete protection for user documents, data, and access permissions.</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team/Structure/Project details -->
+        <div class="row g-4 text-center mt-5">
+            <h3 class="mb-5">Core Values</h3>
+            <div class="col-md-4">
+                <div class="card card-custom p-4">
+                    <div class="fs-1 text-primary mb-3"><i class="bi bi-shield-check"></i></div>
+                    <h5>Trust & Security</h5>
+                    <p class="text-muted">Enforcing strict checks on data transmission and resume files validation.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-custom p-4">
+                    <div class="fs-1 text-primary mb-3"><i class="bi bi-lightning-charge"></i></div>
+                    <h5>Real-time Processing</h5>
+                    <p class="text-muted">Direct notifications and immediate feedback for applicants and job editors.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-custom p-4">
+                    <div class="fs-1 text-primary mb-3"><i class="bi bi-people-fill"></i></div>
+                    <h5>Accessibility</h5>
+                    <p class="text-muted">Fully mobile-responsive rendering ensuring ease of access across devices.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

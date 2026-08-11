@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile | JobConnect{% endblock %}
+
+{% block content %}
+<section class="dashboard-container">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <div class="sidebar-card text-center mb-4">
+                    {% if profile_form.instance.profile_photo %}
+                        <img src="{{ profile_form.instance.profile_photo.url }}" alt="Profile Photo" class="profile-avatar-img mb-3">
+                    {% else %}
+                        <div class="profile-avatar-img d-inline-flex align-items-center justify-content-center bg-primary-light text-primary fs-1 mb-3">
+                            <i class="bi bi-person"></i>
+                        </div>
+                    {% endif %}
+                    <h4 class="mb-1">{{ request.user.first_name }} {{ request.user.last_name }}</h4>
+                    <span class="badge bg-primary text-white mb-4">Job Seeker</span>
+                    
+                    <hr>
+                    <div class="text-start">
+                        <a href="{% url 'seeker_dashboard' %}" class="sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                        <a href="{% url 'seeker_profile' %}" class="sidebar-link"><i class="bi bi-person"></i> View Profile</a>
+                        <a href="{% url 'edit_seeker_profile' %}" class="sidebar-link active"><i class="bi bi-pencil-square"></i> Edit Profile</a>
+                        <a href="{% url 'my_applications' %}" class="sidebar-link"><i class="bi bi-send-check"></i> Applications</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Edit Form Details -->
+            <div class="col-lg-9">
+                <div class="card card-custom p-4 p-md-5 border-0 shadow-sm">
+                    <h3 class="border-bottom pb-3 mb-4">Edit Profile details</h3>
+                    
+                    <form action="" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Account Details Section -->
+                        <h5 class="text-primary mb-3">1. Account Details</h5>
+                        <div class="row g-3 mb-4">
+                            {% for field in user_form %}
+                                <div class="col-md-6">
+                                    <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% for error in field.errors %}
+                                        <div class="text-danger small mt-1">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Professional details Section -->
+                        <h5 class="text-primary mb-3">2. Professional Details</h5>
+                        <div class="row g-3">
+                            {% for field in profile_form %}
+                                <div class="col-12 {% if field.name == 'phone' or field.name == 'city' or field.name == 'date_of_birth' or field.name == 'gender' %}col-md-6{% endif %}">
+                                    <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                                        {{ field.label }}
+                                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <div class="form-text text-muted small">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% for error in field.errors %}
+                                        <div class="text-danger small mt-1"><i class="bi bi-x-circle-fill me-1"></i>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mt-5 d-flex gap-3">
+                            <button type="submit" class="btn btn-primary-custom px-5 py-3">Save Profile</button>
+                            <a href="{% url 'seeker_profile' %}" class="btn btn-outline-secondary px-4 py-3">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

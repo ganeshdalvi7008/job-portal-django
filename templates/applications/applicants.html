@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Applicants for {{ job.title }} | JobConnect{% endblock %}
+
+{% block content %}
+<section class="dashboard-container">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <div class="sidebar-card text-center mb-4">
+                    <div class="profile-avatar-img d-inline-flex align-items-center justify-content-center bg-secondary-light text-secondary fs-1 mb-3">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <h4 class="mb-1">{{ request.user.first_name }}</h4>
+                    <span class="badge bg-secondary text-white mb-4">Recruiter</span>
+                    
+                    <hr>
+                    <div class="text-start">
+                        <a href="{% url 'recruiter_dashboard' %}" class="sidebar-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                        <a href="{% url 'recruiter_profile' %}" class="sidebar-link"><i class="bi bi-building"></i> Company/Profile</a>
+                        <a href="{% url 'edit_recruiter_profile' %}" class="sidebar-link"><i class="bi bi-pencil-square"></i> Edit Profile</a>
+                        <a href="{% url 'manage_jobs' %}" class="sidebar-link active"><i class="bi bi-list-task"></i> Manage Jobs</a>
+                        <a href="{% url 'add_job' %}" class="sidebar-link"><i class="bi bi-plus-circle"></i> Post a Job</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Applicants List -->
+            <div class="col-lg-9">
+                <div class="card card-custom p-4 border-0 shadow-sm">
+                    <div class="border-bottom pb-3 mb-4 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-1">Applicants for: "{{ job.title }}"</h3>
+                            <p class="text-muted mb-0">Total Applications: {{ apps.count }}</p>
+                        </div>
+                        <a href="{% url 'manage_jobs' %}" class="btn btn-outline-secondary btn-sm px-3"><i class="bi bi-arrow-left"></i> Back to Jobs</a>
+                    </div>
+                    
+                    {% if apps %}
+                        <div class="table-responsive">
+                            <table class="table table-custom align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Candidate Name</th>
+                                        <th>Email Address</th>
+                                        <th>Applied Date</th>
+                                        <th>Resume</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for app in apps %}
+                                        <tr>
+                                            <td>
+                                                <span class="fw-bold text-dark d-block mb-0.5">{{ app.job_seeker.first_name }} {{ app.job_seeker.last_name }}</span>
+                                                <span class="text-secondary small"><i class="bi bi-telephone"></i> {{ app.job_seeker.seeker_profile.phone|default:"-" }}</span>
+                                            </td>
+                                            <td class="small text-secondary">{{ app.job_seeker.email }}</td>
+                                            <td class="small text-secondary">{{ app.applied_at|date:"d M Y, h:i A" }}</td>
+                                            <td>
+                                                <a href="{% url 'download_resume' app.id %}" class="btn btn-xs btn-outline-danger px-2.5 py-1 fw-bold text-xs" title="Download Resume">
+                                                    <i class="bi bi-file-earmark-pdf"></i> Download
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if app.status == 'Applied' %}badge-custom-applied
+                                                    {% elif app.status == 'Under Review' %}badge-custom-review
+                                                    {% elif app.status == 'Shortlisted' %}badge-custom-shortlist
+                                                    {% elif app.status == 'Interview' %}badge-custom-interview
+                                                    {% elif app.status == 'Selected' %}badge-custom-selected
+                                                    {% elif app.status == 'Rejected' %}badge-custom-rejected
+                                                    {% endif %} px-2 py-1 text-xs">
+                                                    {{ app.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="{% url 'application_detail' app.id %}" class="btn btn-sm btn-secondary-custom px-3 text-xs fw-semibold">Review Packet</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-people fs-1 text-muted mb-3 d-block"></i>
+                            <h5>No applications received yet</h5>
+                            <p class="text-muted mb-0">This job posting has not received any applications yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
