@@ -186,5 +186,9 @@ Once seeded, you can log in using these preset credentials:
 ---
 
 ## 👤 Author
-* B.Tech Computer Science & Engineering Final-Year Project.
-* Developer: Pair Programming with Antigravity AI.
+## 👤 Author
+
+- **Name:** Ganesh Dalvi
+- **Education:** B.Tech in Computer Science & Engineering
+- **Project:** Job Portal Management System
+- **Technologies:** Python, Django, MySQL, HTML5, CSS3, JavaScript, Bootstrap 5
