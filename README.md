@@ -185,7 +185,7 @@ Once seeded, you can log in using these preset credentials:
 
 ---
 
-## 👤 Author
+
 ## 👤 Author
 
 - **Name:** Ganesh Dalvi
